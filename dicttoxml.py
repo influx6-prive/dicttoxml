@@ -263,7 +263,7 @@ def convert_list(items, ids, parent, attr_type, item_func, cdata):
 
     item_name = item_func(parent)
     LOG.info(
-        'Inside convert(). obj type is: "%s", obj="%s", name="%s"' % (type(obj).__name__, unicode_me(obj), item_name))
+        'Inside convert(). obj type is: name="%s"' % item_name)
 
     if ids:
         this_id = get_unique_id(parent)
