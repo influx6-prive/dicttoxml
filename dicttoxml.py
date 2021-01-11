@@ -161,10 +161,15 @@ def wrap_cdata(s):
     return '<![CDATA[' + s + ']]>'
 
 
+name_field = "__name__"
+
+
 def default_item_func(parent, obj):
-    if "__name__" in obj and type(obj) == dict:
-        item_name = obj.get("__name__")
-        del obj["__name"]
+    if isinstance(obj, dict):
+        if name_field in obj:
+            item_name = obj.get(name_field)
+            del obj[name_field]
+            return item_name
     return 'item'
 
 
@@ -202,7 +207,7 @@ def convert_dict(obj, ids, parent, attr_type, item_func, cdata):
     output = []
     addline = output.append
 
-    item_name = item_func(parent)
+    item_name = item_func(parent, obj)
     LOG.info(
         'Inside convert(). obj type is: "%s", obj="%s", name="%s"' % (type(obj).__name__, unicode_me(obj), item_name))
 
@@ -261,7 +266,7 @@ def convert_list(items, ids, parent, attr_type, item_func, cdata):
     output = []
     addline = output.append
 
-    item_name = item_func(parent)
+    item_name = item_func(parent, items)
     LOG.info(
         'Inside convert(). obj type is: name="%s"' % item_name)
 
