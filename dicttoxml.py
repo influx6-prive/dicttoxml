@@ -11,7 +11,7 @@ This module works with both Python 2 and 3.
 
 from __future__ import unicode_literals
 
-__version__ = "1.7.5"
+__version__ = "1.7.7"
 version = __version__
 
 from random import randint
@@ -35,16 +35,8 @@ except:
     long = int
 
 
-def set_debug(debug=True, filename="dicttoxml.log"):
-    if debug:
-        import datetime
-
-        print("Debug mode is on. Events are logged at: %s" % (filename))
-        logging.basicConfig(filename=filename, level=logging.INFO)
-        LOG.info("\nLogging session starts: %s" % (str(datetime.datetime.today())))
-    else:
-        logging.basicConfig(level=logging.WARNING)
-        print("Debug mode is off.")
+def set_debug(logg: logging.Logger):
+    LOG = logg
 
 
 def unicode_me(something):
@@ -119,7 +111,7 @@ def make_attrstring(attr):
 
 def key_is_valid_xml(key):
     """Checks that a key is a valid XML name"""
-    LOG.info('Inside key_is_valid_xml(). Testing "%s"' % (unicode_me(key)))
+    LOG.info('Inside key_is_valid_xml(). Testing "%s"' % (unicode_me(key))) if LOG is not None
     test_xml = '<?xml version="1.0" encoding="UTF-8" ?><%s>foo</%s>' % (key, key)
     try:
         parseString(test_xml)
@@ -133,7 +125,7 @@ def make_valid_xml_name(key, attr):
     LOG.info(
         'Inside make_valid_xml_name(). Testing key "%s" with attr "%s"'
         % (unicode_me(key), unicode_me(attr))
-    )
+    ) if LOG is not None
     key = escape_xml(key)
     attr = escape_xml(attr)
 
@@ -181,7 +173,7 @@ def convert(obj, ids, attr_type, item_func, cdata, parent="root"):
     LOG.info(
         'Inside convert(). obj type is: "%s", obj="%s", name="%s"'
         % (type(obj).__name__, unicode_me(obj), item_name)
-    )
+    ) if LOG is not None
 
     if isinstance(obj, numbers.Number) or type(obj) in (str, unicode):
         return convert_kv(item_name, obj, attr_type, cdata)
@@ -213,13 +205,13 @@ def convert_dict(obj, ids, parent, attr_type, item_func, cdata):
     LOG.info(
         'Inside convert_dict(). obj type is: "%s", obj="%s", name="%s"'
         % (type(obj).__name__, unicode_me(obj), item_name)
-    )
+    ) if LOG is not None
 
     for key, val in obj.items():
         LOG.info(
             'Looping inside convert_dict(): key="%s", val="%s", type(val)="%s"'
             % (unicode_me(key), unicode_me(val), type(val).__name__)
-        )
+        ) if LOG is not None
 
         attr = {} if not ids else {"id": "%s" % (get_unique_id(parent))}
 
@@ -280,7 +272,7 @@ def convert_list(items, ids, parent, attr_type, item_func, cdata):
     LOG.info(
         'Inside convert_list(). obj type is: name="%s", parent="%s"'
         % (item_name, parent)
-    )
+    ) if LOG is not None
 
     if ids:
         this_id = get_unique_id(parent)
@@ -291,7 +283,7 @@ def convert_list(items, ids, parent, attr_type, item_func, cdata):
         LOG.info(
             'Looping inside convert_list(): item="%s", item_name="%s", type="%s"'
             % (unicode_me(item), index_item_name, type(item).__name__)
-        )
+        ) if LOG is not None
 
         attr = {} if not ids else {"id": "%s_%s" % (this_id, i + 1)}
         if isinstance(item, numbers.Number) or type(item) in (str, unicode):
@@ -362,7 +354,7 @@ def convert_kv(key, val, attr_type, attr={}, cdata=False):
     LOG.info(
         'Inside convert_kv(): key="%s", val="%s", type(val) is: "%s"'
         % (unicode_me(key), unicode_me(val), type(val).__name__)
-    )
+    ) if LOG is not None
 
     key, attr = make_valid_xml_name(key, attr)
 
@@ -382,7 +374,7 @@ def convert_bool(key, val, attr_type, attr={}, cdata=False):
     LOG.info(
         'Inside convert_bool(): key="%s", val="%s", type(val) is: "%s"'
         % (unicode_me(key), unicode_me(val), type(val).__name__)
-    )
+    ) if LOG is not None
 
     key, attr = make_valid_xml_name(key, attr)
 
@@ -394,7 +386,7 @@ def convert_bool(key, val, attr_type, attr={}, cdata=False):
 
 def convert_none(key, val, attr_type, attr={}, cdata=False):
     """Converts a null value into an XML element"""
-    LOG.info('Inside convert_none(): key="%s"' % (unicode_me(key)))
+    LOG.info('Inside convert_none(): key="%s"' % (unicode_me(key))) if LOG is not None
 
     key, attr = make_valid_xml_name(key, attr)
 
@@ -432,7 +424,7 @@ def dicttoxml(
     LOG.info(
         'Inside dicttoxml(): type(obj) is: "%s", obj="%s"'
         % (type(obj).__name__, unicode_me(obj))
-    )
+    ) if LOG is not None
     output = []
     addline = output.append
     if root == True:
