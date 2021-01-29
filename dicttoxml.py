@@ -111,7 +111,9 @@ def make_attrstring(attr):
 
 def key_is_valid_xml(key):
     """Checks that a key is a valid XML name"""
-    LOG.info('Inside key_is_valid_xml(). Testing "%s"' % (unicode_me(key))) if LOG is not None
+    if LOG is not None:
+        LOG.info('Inside key_is_valid_xml(). Testing "%s"' % (unicode_me(key)))
+        
     test_xml = '<?xml version="1.0" encoding="UTF-8" ?><%s>foo</%s>' % (key, key)
     try:
         parseString(test_xml)
@@ -122,10 +124,11 @@ def key_is_valid_xml(key):
 
 def make_valid_xml_name(key, attr):
     """Tests an XML name and fixes it if invalid"""
-    LOG.info(
-        'Inside make_valid_xml_name(). Testing key "%s" with attr "%s"'
-        % (unicode_me(key), unicode_me(attr))
-    ) if LOG is not None
+    if LOG is not None:
+        LOG.info(
+            'Inside make_valid_xml_name(). Testing key "%s" with attr "%s"'
+            % (unicode_me(key), unicode_me(attr))
+        )
     key = escape_xml(key)
     attr = escape_xml(attr)
 
@@ -170,10 +173,11 @@ def convert(obj, ids, attr_type, item_func, cdata, parent="root"):
     based on their data type"""
 
     item_name = item_func(parent, obj)
-    LOG.info(
-        'Inside convert(). obj type is: "%s", obj="%s", name="%s"'
-        % (type(obj).__name__, unicode_me(obj), item_name)
-    ) if LOG is not None
+    if LOG is not None:
+        LOG.info(
+            'Inside convert(). obj type is: "%s", obj="%s", name="%s"'
+            % (type(obj).__name__, unicode_me(obj), item_name)
+        )
 
     if isinstance(obj, numbers.Number) or type(obj) in (str, unicode):
         return convert_kv(item_name, obj, attr_type, cdata)
@@ -202,17 +206,17 @@ def convert_dict(obj, ids, parent, attr_type, item_func, cdata):
     addline = output.append
 
     item_name = item_func(parent, obj)
-    LOG.info(
-        'Inside convert_dict(). obj type is: "%s", obj="%s", name="%s"'
-        % (type(obj).__name__, unicode_me(obj), item_name)
-    ) if LOG is not None
-
-    for key, val in obj.items():
+    if LOG is not None:
         LOG.info(
-            'Looping inside convert_dict(): key="%s", val="%s", type(val)="%s"'
-            % (unicode_me(key), unicode_me(val), type(val).__name__)
-        ) if LOG is not None
-
+            'Inside convert_dict(). obj type is: "%s", obj="%s", name="%s"'
+            % (type(obj).__name__, unicode_me(obj), item_name)
+        )
+    for key, val in obj.items():
+        if LOG is not None:
+            LOG.info(
+                'Looping inside convert_dict(): key="%s", val="%s", type(val)="%s"'
+                % (unicode_me(key), unicode_me(val), type(val).__name__)
+            )
         attr = {} if not ids else {"id": "%s" % (get_unique_id(parent))}
 
         key, attr = make_valid_xml_name(key, attr)
@@ -269,22 +273,22 @@ def convert_list(items, ids, parent, attr_type, item_func, cdata):
     addline = output.append
 
     item_name = item_func(parent, items)
-    LOG.info(
-        'Inside convert_list(). obj type is: name="%s", parent="%s"'
-        % (item_name, parent)
-    ) if LOG is not None
-
+    if LOG is not None:
+        LOG.info(
+            'Inside convert_list(). obj type is: name="%s", parent="%s"'
+            % (item_name, parent)
+        )
     if ids:
         this_id = get_unique_id(parent)
 
     for i, item in enumerate(items):
         index_item_name = item_func(parent, item)
 
-        LOG.info(
-            'Looping inside convert_list(): item="%s", item_name="%s", type="%s"'
-            % (unicode_me(item), index_item_name, type(item).__name__)
-        ) if LOG is not None
-
+        if LOG is not None:
+            LOG.info(
+                'Looping inside convert_list(): item="%s", item_name="%s", type="%s"'
+                % (unicode_me(item), index_item_name, type(item).__name__)
+            )
         attr = {} if not ids else {"id": "%s_%s" % (this_id, i + 1)}
         if isinstance(item, numbers.Number) or type(item) in (str, unicode):
             addline(convert_kv(index_item_name, item, attr_type, attr, cdata))
@@ -351,11 +355,11 @@ def convert_list(items, ids, parent, attr_type, item_func, cdata):
 
 def convert_kv(key, val, attr_type, attr={}, cdata=False):
     """Converts a number or string into an XML element"""
-    LOG.info(
-        'Inside convert_kv(): key="%s", val="%s", type(val) is: "%s"'
-        % (unicode_me(key), unicode_me(val), type(val).__name__)
-    ) if LOG is not None
-
+    if LOG is not None:
+        LOG.info(
+            'Inside convert_kv(): key="%s", val="%s", type(val) is: "%s"'
+            % (unicode_me(key), unicode_me(val), type(val).__name__)
+        )
     key, attr = make_valid_xml_name(key, attr)
 
     if attr_type:
@@ -371,11 +375,11 @@ def convert_kv(key, val, attr_type, attr={}, cdata=False):
 
 def convert_bool(key, val, attr_type, attr={}, cdata=False):
     """Converts a boolean into an XML element"""
-    LOG.info(
-        'Inside convert_bool(): key="%s", val="%s", type(val) is: "%s"'
-        % (unicode_me(key), unicode_me(val), type(val).__name__)
-    ) if LOG is not None
-
+    if LOG is not None:
+        LOG.info(
+            'Inside convert_bool(): key="%s", val="%s", type(val) is: "%s"'
+            % (unicode_me(key), unicode_me(val), type(val).__name__)
+        )
     key, attr = make_valid_xml_name(key, attr)
 
     if attr_type:
@@ -386,8 +390,8 @@ def convert_bool(key, val, attr_type, attr={}, cdata=False):
 
 def convert_none(key, val, attr_type, attr={}, cdata=False):
     """Converts a null value into an XML element"""
-    LOG.info('Inside convert_none(): key="%s"' % (unicode_me(key))) if LOG is not None
-
+    if LOG is not None:
+        LOG.info('Inside convert_none(): key="%s"' % (unicode_me(key)))
     key, attr = make_valid_xml_name(key, attr)
 
     if attr_type:
@@ -421,10 +425,12 @@ def dicttoxml(
     - cdata specifies whether string values should be wrapped in CDATA sections.
       Default is False
     """
-    LOG.info(
-        'Inside dicttoxml(): type(obj) is: "%s", obj="%s"'
-        % (type(obj).__name__, unicode_me(obj))
-    ) if LOG is not None
+    if LOG is not None:
+        LOG.info(
+            'Inside dicttoxml(): type(obj) is: "%s", obj="%s"'
+            % (type(obj).__name__, unicode_me(obj))
+        )
+
     output = []
     addline = output.append
     if root == True:
